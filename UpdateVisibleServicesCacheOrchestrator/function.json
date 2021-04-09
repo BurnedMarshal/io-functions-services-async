@@ -1,4 +1,5 @@
 {
+  "disabled": false,
   "bindings": [
     {
       "name": "context",
@@ -6,5 +7,6 @@
       "direction": "in"
     }
   ],
-  "scriptFile": "../dist/DurableFunctionsOrchestrator/index.js"
+  "scriptFile": "../dist/UpdateVisibleServicesCacheOrchestrator/index.js"
 }
+

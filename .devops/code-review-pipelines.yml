@@ -6,6 +6,10 @@
 # - DANGER_GITHUB_API_TOKEN
 # 
 
+variables:
+  NODE_VERSION: '10.14.1'
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
 # Automatically triggered on PR
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pr-trigger
 trigger: none
@@ -14,14 +18,6 @@ trigger: none
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
 pool:
   vmImage: 'ubuntu-latest'
-
-resources:
-  repositories:
-    - repository: pagopaCommons
-      type: github
-      name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v14
-      endpoint: 'io-azure-devops-github-ro'
 
 stages:
   - stage: Build
@@ -32,7 +28,7 @@ stages:
           # As we deploy on Wondows machines, we use Windows to build
           vmImage: 'windows-2019'         
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/setup-project.yml
         - script: |
             yarn build
           displayName: 'Build'
@@ -40,12 +36,20 @@ stages:
   - stage: Static_analysis
     dependsOn: []
     jobs:
+
       - job: lint     
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/setup-project.yml
         - script: |
             yarn lint
           displayName: 'Lint'
+
+      - job: validate_api_specification     
+        steps:
+        - template: azure-templates/setup-project.yml
+        - script: |
+            yarn lint-api
+          displayName: 'Validate API specification'
 
       - job: danger
         condition: 
@@ -54,8 +58,7 @@ stages:
             ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
           )
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-
+          - template: azure-templates/setup-project.yml
           - bash: |
               yarn danger ci
             env:
@@ -69,7 +72,7 @@ stages:
     jobs:
       - job: unit_tests
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/setup-project.yml
         
         - script: |
             yarn generate
