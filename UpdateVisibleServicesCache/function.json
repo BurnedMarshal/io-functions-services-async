@@ -2,7 +2,7 @@
   "disabled": false,
   "bindings": [
     {
-        "schedule": "0 0 * * * *",
+        "schedule": "0 0 0 * * *",
         "name": "updateVisibleServiceCacheTimer",
         "type": "timerTrigger",
         "direction": "in"
