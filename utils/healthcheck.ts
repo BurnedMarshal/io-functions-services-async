@@ -15,7 +15,7 @@ import {
   TaskEither,
   tryCatch
 } from "fp-ts/lib/TaskEither";
-import { readableReport } from "italia-ts-commons/lib/reporters";
+import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import fetch from "node-fetch";
 import { getConfig, IConfig } from "./config";
 
@@ -140,8 +140,8 @@ export const checkApplicationHealth = (): HealthCheck<ProblemSource, true> =>
         /* eslint-disable functional/prefer-readonly-type */
         Array<TaskEither<ReadonlyArray<HealthProblem<ProblemSource>>, true>>
       >(
-        checkAzureCosmosDbHealth(config.COSMOSDB_URI, config.COSMOSDB_KEY),
-        checkAzureStorageHealth(config.QueueStorageConnection)
+        checkAzureStorageHealth(config.AssetsStorageConnection),
+        checkAzureStorageHealth(config.StorageConnection)
       )
     )
     .map(_ => true);
